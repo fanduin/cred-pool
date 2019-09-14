@@ -5,16 +5,9 @@
 
 void *hello()
 {
-    printf("hello from another thread\n");
+    printf("\thello from another thread\n");
 
     return 0;
-}
-
-void delay(int seconds) {
-    clock_t start_time = clock();
-
-    while (clock() < start_time + seconds * CLOCKS_PER_SEC)
-        ;
 }
 
 int main()
@@ -24,9 +17,11 @@ int main()
     tpool_t pool = {};
     initialise_pool(&pool);
 
-    delay(5);
-    execute_job(&pool, h);
-
+    for (int i = 0; i < 5; i++)
+    {
+        execute_job(&pool, h);
+    }
+    
     destroy_pool(&pool);
 
     return 0;
