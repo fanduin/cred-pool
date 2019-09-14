@@ -90,6 +90,7 @@ void destroy_pool(tpool_t *pool) {
     pthread_mutex_lock(&msg_lock);
 
     message =  SHUT_DOWN;
+    msg_ready = true;
     printf("destroy_pool: broadcasting to handler\n");
     pthread_cond_broadcast(&msg_cond);
     pthread_mutex_unlock(&msg_lock);
