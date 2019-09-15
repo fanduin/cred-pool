@@ -31,7 +31,7 @@ void *handle_job() {
         {
         case JOB_READY:
             printf("handler: job ready message\n");
-            job(NULL);
+            job.function(job.args);
             break;
         
         case SHUT_DOWN:

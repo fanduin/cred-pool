@@ -5,9 +5,14 @@
 
 typedef enum message { EMPTY, JOB_READY, SHUT_DOWN } Message;
 
-typedef void *(*job_t)(void *arg);
+typedef void *(*function_t)(void *arg);
 
-typedef struct tpool_t {
+typedef struct {
+    function_t function;
+    void *args;
+} job_t;
+
+typedef struct {
     pthread_t thread;
 } tpool_t;
 
