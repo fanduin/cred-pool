@@ -24,39 +24,22 @@ void *print_sum(void *_n) {
     return 0;
 }
 
-char *r = "Raphael";
-char *m = "Michaelangelo";
-char *l = "Leonardo";
-char *d = "Donnatello";
+char *a = "A";
+char *b = "B";
+char *c = "C";
+char *d = "D";
 
 int main()
 {
-    job_t j = {
-        hello,
-    };
+    tpool_t *pool = (tpool_t *)malloc(sizeof(tpool_t));
+    initialise_pool(pool);
 
-    tpool_t pool = {};
-    initialise_pool(&pool);
+    execute_job(pool, hello, a);
+    execute_job(pool, hello, b);
+    execute_job(pool, hello, c);
+    execute_job(pool, hello, d);
 
-    j.args = r;
-    execute_job(&pool, j);
-
-    j.args = m;
-    execute_job(&pool, j);
-
-    j.args = l;
-    execute_job(&pool, j);
-
-    j.function = print_sum;
-    int test_n = 100;
-    j.args = &test_n;
-    execute_job(&pool, j);
-
-    j.function = hello;
-    j.args = d;
-    execute_job(&pool, j);
-
-    destroy_pool(&pool);
+    destroy_pool(pool);
 
     return 0;
 }
