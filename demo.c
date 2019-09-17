@@ -18,8 +18,8 @@ void *print_sum(void *_n) {
 
 int main()
 {
-    int nthreads = 2;
-    int njobs = 5;
+    int nthreads = 5;
+    int njobs = 50;
 
     tpool_t *pool = (tpool_t *)malloc(sizeof(tpool_t));
     initialise_pool(pool, nthreads);

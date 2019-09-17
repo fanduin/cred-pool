@@ -87,7 +87,6 @@ void *handle_job(void *_pool) {
 }
 
 void initialise_pool(tpool_t *pool, size_t n) {
-    // pthread_t *thread = &(pool->thread);
     pool->nthreads = n;
     pool->thread = (pthread_t *)malloc(n * sizeof(pthread_t));
 
