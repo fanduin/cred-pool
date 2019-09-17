@@ -45,7 +45,10 @@ void *handle_job(void *_pool) {
     tpool_t *pool = (tpool_t *)_pool;
     job_t *job = NULL;
 
+    bool have_job = false;
     bool exit = false;
+
+    pthread_t self = pthread_self(); 
 
     while (true) {
         pthread_mutex_lock(&(pool->tpool_lock));
@@ -60,16 +63,21 @@ void *handle_job(void *_pool) {
             break;
 
         case OK:
+            have_job = true;
             job = pop_job(pool->q);
-
-            job->function(job->args);
-            free(job);
-            job = NULL;
             break;
         }
 
         pthread_cond_signal(&(pool->tpool_done_cond));
         pthread_mutex_unlock(&(pool->tpool_lock));
+
+        if (have_job) {
+            printf("Executing from thread %lu\n", self);
+            job->function(job->args);
+            free(job);
+            job = NULL;
+            have_job = false;
+        }
 
         if (exit == true)
             break;
@@ -78,8 +86,10 @@ void *handle_job(void *_pool) {
     return 0;
 }
 
-void initialise_pool(tpool_t *pool) {
-    pthread_t *thread = &(pool->thread);
+void initialise_pool(tpool_t *pool, size_t n) {
+    // pthread_t *thread = &(pool->thread);
+    pool->nthreads = n;
+    pool->thread = (pthread_t *)malloc(n * sizeof(pthread_t));
 
     pool->q = (job_q *) malloc(sizeof(job_q));
 
@@ -93,9 +103,10 @@ void initialise_pool(tpool_t *pool) {
     pthread_cond_init(&(pool->tpool_cond), NULL);
     pthread_cond_init(&(pool->tpool_done_cond), NULL);
 
-    tpool_t *test_pool = (tpool_t *)malloc(sizeof(tpool_t));
-    *test_pool = *pool;
-    int pid = pthread_create(thread, NULL, handle_job, pool);
+    for (size_t i = 0; i < n; i++)
+    {
+        pthread_create(&pool->thread[i], NULL, handle_job, pool);
+    }
 }
 
 void execute_job(tpool_t *tpool, function_t function, void *args) {
@@ -118,7 +129,12 @@ void destroy_pool(tpool_t *pool) {
     pthread_cond_broadcast(&(pool->tpool_cond));
     pthread_mutex_unlock(&(pool->tpool_lock));
 
-    pthread_join(pool->thread, NULL);
-
-    int pid = pthread_create(&(pool->thread), NULL, handle_job, NULL);
+    for (size_t i = 0; i < pool->nthreads; i++)
+    {
+        pthread_join(pool->thread[i], NULL);
+    }
+    
+    free(pool->q);
+    free(pool->thread);
+    free(pool);
 }

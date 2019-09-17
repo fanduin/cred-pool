@@ -6,7 +6,7 @@
 
 typedef enum state { OK, SHUT_DOWN } State;
 
-typedef void *(*function_t)(void *arg);
+typedef void *(*function_t)(void *args);
 
 typedef struct job_t {
     function_t function;
@@ -22,12 +22,13 @@ typedef struct job_q {
     int length;
 } job_q;
 
-void push_job(job_q *q, function_t funciton, void *args);
+void push_job(job_q *q, function_t function, void *args);
 
 job_t *pop_job(job_q *q);
 
 typedef struct {
-    pthread_t thread;
+    pthread_t *thread;
+    size_t nthreads;
 
     pthread_mutex_t tpool_lock;
     pthread_cond_t tpool_cond;
@@ -38,10 +39,10 @@ typedef struct {
     job_q *q;
 } tpool_t;
 
-void initialise_pool(tpool_t *);
+void initialise_pool(tpool_t *pool, size_t n);
 
-void destroy_pool(tpool_t *);
+void destroy_pool(tpool_t *pool);
 
-void execute_job(tpool_t *, function_t, void *);
+void execute_job(tpool_t *pool, function_t function, void *args);
 
 #endif /* ifndef THREADPOOL_H */
