@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#include "threadpool.h"
+#include "credpool.h"
 
 void push_job(job_q *q, function_t funciton, void *args) {
     job_t *job = malloc(sizeof(job_t));

@@ -1,3 +1,5 @@
 main
 vgcore.*
 launch.json
+*.o
+*.so
